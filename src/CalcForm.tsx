@@ -5,7 +5,7 @@ import {
   type ReactElement,
   type SubmitEvent,
 } from "react";
-import { type Calc } from "./Calc";
+import { type Calc, type CalcIn } from "./Calc";
 
 type CalcFormRowProps = {
   id: string;
@@ -41,8 +41,8 @@ function CalcFormRow({
 
 export function CalcForm(): ReactElement {
   const responseInputRef = useRef<HTMLTextAreaElement>(null);
-  let [calcForm, setCalcForm] = useState<Calc>({
-    attackers: [{ stats: { attacks: "1", skill: 6, pow: 10 }, count: 1 }],
+  let [calcForm, setCalcForm] = useState<CalcIn>({
+    attackers: [{ stats: { attacks: "1", skill: 6, pow: 10 } }],
     defenders: { stats: { def: 12, arm: 18, hp: 30 }, count: 1 },
   });
 
@@ -186,25 +186,6 @@ export function CalcForm(): ReactElement {
                 }
               />
             </div>
-            <CalcFormRow
-              id={"count" + index}
-              label="count"
-              type="number"
-              value={calcForm.attackers[index]?.count}
-              onChange={(e) =>
-                setCalcForm({
-                  ...calcForm,
-                  attackers: calcForm.attackers.map((a, i) =>
-                    i === index
-                      ? {
-                          ...a,
-                          count: Number(e.target.value),
-                        }
-                      : a,
-                  ),
-                })
-              }
-            />
           </fieldset>
         ))}
         <button
@@ -215,7 +196,7 @@ export function CalcForm(): ReactElement {
               ...calcForm,
               attackers: [
                 ...calcForm.attackers,
-                { stats: { attacks: "1", skill: 6, pow: 10 }, count: 1 },
+                { stats: { attacks: "1", skill: 6, pow: 10 } },
               ],
             })
           }
@@ -258,6 +239,24 @@ export function CalcForm(): ReactElement {
                   stats: {
                     ...calcForm.defenders.stats,
                     arm: Number(e.target.value),
+                  },
+                },
+              })
+            }
+          />
+          <CalcFormRow
+            id="defenders-arm"
+            label="hp"
+            type="number"
+            value={calcForm.defenders.stats.hp}
+            onChange={(e) =>
+              setCalcForm({
+                ...calcForm,
+                defenders: {
+                  ...calcForm.defenders,
+                  stats: {
+                    ...calcForm.defenders.stats,
+                    hp: Number(e.target.value),
                   },
                 },
               })

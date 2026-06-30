@@ -1,5 +1,6 @@
 import { serve } from "bun";
 import index from "./index.html";
+import { makeReport } from "./Calc";
 
 const server = serve({
   routes: {
@@ -14,8 +15,9 @@ const server = serve({
         });
       },
       async POST(req: Request) {
-        let rb = await req.json();
-        return Response.json(rb);
+        let calc = await req.json();
+        let report = makeReport(calc);
+        return Response.json(report);
       },
     },
   },
