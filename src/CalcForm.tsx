@@ -43,7 +43,10 @@ export function CalcForm(): ReactElement {
   const responseInputRef = useRef<HTMLTextAreaElement>(null);
   let [calcForm, setCalcForm] = useState<CalcIn>({
     attackers: [{ stats: { attacks: "1", skill: 6, pow: 10 } }],
-    defenders: { stats: { def: 12, arm: 18, hp: 30 }, count: 1 },
+    defenders: {
+      stats: { def: 12, arm: 18, hp: 30, impervious: false },
+      count: 1,
+    },
   });
 
   const sendForm = async (e: SubmitEvent<HTMLFormElement>) => {
@@ -262,6 +265,26 @@ export function CalcForm(): ReactElement {
               })
             }
           />
+          <div className="calc-form-block-row">
+            <label htmlFor="impervious">impervious</label>
+            <input
+              type="checkbox"
+              id="impervious"
+              checked={calcForm.defenders.stats.impervious}
+              onChange={(e) =>
+                setCalcForm({
+                  ...calcForm,
+                  defenders: {
+                    ...calcForm.defenders,
+                    stats: {
+                      ...calcForm.defenders.stats,
+                      impervious: e.target.checked,
+                    },
+                  },
+                })
+              }
+            />
+          </div>
           <CalcFormRow
             id="defenders-count"
             label="count"
