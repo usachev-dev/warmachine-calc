@@ -83,12 +83,13 @@ h3 {
 }
 .input {
     width: 100%;
+    max-width: 100px;
     flex: 1;
-    background: 0;
+    background: #1a1a1a;
     border: 0;
     color: #fbf0df;
     font: 1em monospace;
-    padding: 0.2rem;
+    padding: 0.5rem;
     outline: 0;
 }
 .input:focus {

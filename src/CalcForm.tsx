@@ -1,7 +1,45 @@
-import { useRef, useState, type SubmitEvent } from "react";
+import {
+  useRef,
+  useState,
+  type ChangeEvent,
+  type ReactElement,
+  type SubmitEvent,
+} from "react";
 import { type Calc } from "./Calc";
 
-export function CalcForm() {
+type CalcFormRowProps = {
+  id: string;
+  label: string;
+  type: "number" | "text";
+  value: string | number | undefined;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+};
+
+function CalcFormRow({
+  id,
+  label,
+  type,
+  value,
+  onChange,
+  placeholder = label,
+}: CalcFormRowProps): ReactElement {
+  return (
+    <div className="calc-form-block-row">
+      <label htmlFor={id}>{label}</label>
+      <input
+        type={type}
+        id={id}
+        value={value}
+        onChange={onChange}
+        className="input"
+        placeholder={placeholder}
+      />
+    </div>
+  );
+}
+
+export function CalcForm(): ReactElement {
   const responseInputRef = useRef<HTMLTextAreaElement>(null);
   let [calcForm, setCalcForm] = useState<Calc>({
     attackers: [{ stats: { attacks: "1", skill: 6, pow: 10 }, count: 1 }],
@@ -32,88 +70,58 @@ export function CalcForm() {
       <form onSubmit={sendForm} className="calc-form">
         <h2>Attackers</h2>
         {calcForm.attackers.map((a, index) => (
-          <fieldset className="calc-form-block">
+          <fieldset className="calc-form-block" key={index}>
+            <CalcFormRow
+              id={"atk" + index}
+              label="ATK"
+              type="text"
+              value={calcForm.attackers[index]?.stats?.attacks}
+              onChange={(e) =>
+                setCalcForm({
+                  ...calcForm,
+                  attackers: calcForm.attackers.map((a, i) =>
+                    i === index
+                      ? {
+                          ...a,
+                          stats: {
+                            ...a.stats,
+                            attacks: e.target.value,
+                          },
+                        }
+                      : a,
+                  ),
+                })
+              }
+              placeholder="at"
+            />
+            <CalcFormRow
+              id={"skill" + index}
+              label="skill"
+              type="number"
+              value={calcForm.attackers[index]?.stats?.skill}
+              onChange={(e) =>
+                setCalcForm({
+                  ...calcForm,
+                  attackers: calcForm.attackers.map((a, i) =>
+                    i === index
+                      ? {
+                          ...a,
+                          stats: {
+                            ...a.stats,
+                            skill: Number(e.target.value),
+                          },
+                        }
+                      : a,
+                  ),
+                })
+              }
+            />
             <div className="calc-form-block-row">
-              <label htmlFor={"atk" + index}>ATK</label>
+              <label htmlFor="boostATK">boost attack</label>
               <input
-                type="text"
-                id={"atk" + index}
-                value={calcForm.attackers[index]?.stats?.attacks}
-                onChange={(e) =>
-                  setCalcForm({
-                    ...calcForm,
-                    attackers: calcForm.attackers.map((a, i) =>
-                      i === index
-                        ? {
-                            ...a,
-                            stats: { ...a.stats, attacks: e.target.value },
-                          }
-                        : a,
-                    ),
-                  })
-                }
-                className="input"
-                placeholder="at"
-              />
-            </div>
-            <div className="calc-form-block-row">
-              <label htmlFor={"skill" + index}>skill</label>
-              <input
-                type="number"
-                id={"skill" + index}
-                value={calcForm.attackers[index]?.stats?.skill}
-                onChange={(e) =>
-                  setCalcForm({
-                    ...calcForm,
-                    attackers: calcForm.attackers.map((a, i) =>
-                      i === index
-                        ? {
-                            ...a,
-                            stats: {
-                              ...a.stats,
-                              skill: Number(e.target.value),
-                            },
-                          }
-                        : a,
-                    ),
-                  })
-                }
-                className="input"
-                placeholder="skill"
-              />
-            </div>
-            <div className="calc-form-block-row">
-              <label htmlFor={"pow" + index}>pow</label>
-              <input
-                type="number"
-                id={"pow" + index}
-                value={calcForm.attackers[index]?.stats?.pow}
-                onChange={(e) =>
-                  setCalcForm({
-                    ...calcForm,
-                    attackers: calcForm.attackers.map((a, i) =>
-                      i === index
-                        ? {
-                            ...a,
-                            stats: {
-                              ...a.stats,
-                              pow: Number(e.target.value),
-                            },
-                          }
-                        : a,
-                    ),
-                  })
-                }
-                className="input"
-                placeholder="pow"
-              />
-            </div>
-            <div className="calc-form-block-row">
-              <label htmlFor={"count" + index}>count</label>
-              <input
-                type="number"
-                id={"count" + index}
-                value={calcForm.attackers[index]?.count}
+                type="checkbox"
+                id="boostATK"
+                checked={calcForm.attackers[index]?.stats?.boostATK}
                 onChange={(e) =>
                   setCalcForm({
                     ...calcForm,
@@ -123,17 +131,80 @@ export function CalcForm() {
                             ...a,
                             stats: {
                               ...a.stats,
-                              count: Number(e.target.value),
+                              boostATK: e.target.checked,
                             },
                           }
                         : a,
                     ),
                   })
                 }
-                className="input"
-                placeholder="count"
               />
             </div>
+            <CalcFormRow
+              id={"pow" + index}
+              label="pow"
+              type="number"
+              value={calcForm.attackers[index]?.stats?.pow}
+              onChange={(e) =>
+                setCalcForm({
+                  ...calcForm,
+                  attackers: calcForm.attackers.map((a, i) =>
+                    i === index
+                      ? {
+                          ...a,
+                          stats: {
+                            ...a.stats,
+                            pow: Number(e.target.value),
+                          },
+                        }
+                      : a,
+                  ),
+                })
+              }
+            />
+            <div className="calc-form-block-row">
+              <label htmlFor="boostDMG">boost dmg</label>
+              <input
+                type="checkbox"
+                id="boostDMG"
+                checked={calcForm.attackers[index]?.stats?.boostDMG}
+                onChange={(e) =>
+                  setCalcForm({
+                    ...calcForm,
+                    attackers: calcForm.attackers.map((a, i) =>
+                      i === index
+                        ? {
+                            ...a,
+                            stats: {
+                              ...a.stats,
+                              boostDMG: e.target.checked,
+                            },
+                          }
+                        : a,
+                    ),
+                  })
+                }
+              />
+            </div>
+            <CalcFormRow
+              id={"count" + index}
+              label="count"
+              type="number"
+              value={calcForm.attackers[index]?.count}
+              onChange={(e) =>
+                setCalcForm({
+                  ...calcForm,
+                  attackers: calcForm.attackers.map((a, i) =>
+                    i === index
+                      ? {
+                          ...a,
+                          count: Number(e.target.value),
+                        }
+                      : a,
+                  ),
+                })
+              }
+            />
           </fieldset>
         ))}
         <button
@@ -155,70 +226,58 @@ export function CalcForm() {
         <h2>Defenders</h2>
 
         <fieldset className="calc-form-block">
-          <div className="calc-form-block-row">
-            <label htmlFor="defenders-def">def</label>
-            <input
-              type="number"
-              id="defenders-def"
-              value={calcForm.defenders.stats.def}
-              onChange={(e) =>
-                setCalcForm({
-                  ...calcForm,
-                  defenders: {
-                    ...calcForm.defenders,
-                    stats: {
-                      ...calcForm.defenders.stats,
-                      def: Number(e.target.value),
-                    },
+          <CalcFormRow
+            id="defenders-def"
+            label="def"
+            type="number"
+            value={calcForm.defenders.stats.def}
+            onChange={(e) =>
+              setCalcForm({
+                ...calcForm,
+                defenders: {
+                  ...calcForm.defenders,
+                  stats: {
+                    ...calcForm.defenders.stats,
+                    def: Number(e.target.value),
                   },
-                })
-              }
-              className="input"
-              placeholder="def"
-            />
-          </div>
+                },
+              })
+            }
+          />
 
-          <div className="calc-form-block-row">
-            <label htmlFor="defenders-arm">arm</label>
-            <input
-              type="number"
-              id="defenders-arm"
-              value={calcForm.defenders.stats.arm}
-              onChange={(e) =>
-                setCalcForm({
-                  ...calcForm,
-                  defenders: {
-                    ...calcForm.defenders,
-                    stats: {
-                      ...calcForm.defenders.stats,
-                      arm: Number(e.target.value),
-                    },
+          <CalcFormRow
+            id="defenders-arm"
+            label="arm"
+            type="number"
+            value={calcForm.defenders.stats.arm}
+            onChange={(e) =>
+              setCalcForm({
+                ...calcForm,
+                defenders: {
+                  ...calcForm.defenders,
+                  stats: {
+                    ...calcForm.defenders.stats,
+                    arm: Number(e.target.value),
                   },
-                })
-              }
-              className="input"
-              placeholder="arm"
-            />
-          </div>
-          <div className="calc-form-block-row">
-            <label htmlFor="defenders-count">count</label>
-            <input
-              type="number"
-              id="defenders-count"
-              value={calcForm.defenders.count}
-              onChange={(e) =>
-                setCalcForm({
-                  ...calcForm,
-                  defenders: {
-                    ...calcForm.defenders,
-                    count: Number(e.target.value),
-                  },
-                })
-              }
-              className="input"
-              placeholder="count"
-            />
-          </div>
+                },
+              })
+            }
+          />
+          <CalcFormRow
+            id="defenders-count"
+            label="count"
+            type="number"
+            value={calcForm.defenders.count}
+            onChange={(e) =>
+              setCalcForm({
+                ...calcForm,
+                defenders: {
+                  ...calcForm.defenders,
+                  count: Number(e.target.value),
+                },
+              })
+            }
+          />
         </fieldset>
 
         <button type="submit" className="send-button">
